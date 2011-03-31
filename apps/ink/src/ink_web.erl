@@ -19,17 +19,24 @@ dispatcher(Ctx) ->
 
 dispatch('GET', "/", Ctx) ->
     simple_app(Ctx);
-dispatch(_, _, {ewgi_context, Request, _Response}) ->
-    ResponseHeaders = [{"Content-type", "text/plain"}],
-    Response = {ewgi_response, {404, "Not Found"}, ResponseHeaders,
-                [<<"Not found!">>], undefined},
-    {ewgi_context, Request, Response}.
+dispatch(_, "/", Ctx) ->
+    error_405(Ctx);
+dispatch(_, _, Ctx) ->
+    error_404(Ctx).
 
-simple_app({ewgi_context, Request, _Response}) ->
-    ResponseHeaders = [{"Content-type", "text/plain"}],
-    Response = {ewgi_response, {200, "OK"}, ResponseHeaders,
-                [<<"Hello world!">>], undefined},
-    {ewgi_context, Request, Response}.
+error_404(Ctx) ->
+    set_response({404, "Not Found"}, [{"Content-type", "text/plain"}], <<"Not Found">>, Ctx).
+
+error_405(Ctx) ->
+    set_response({405, "Method Not Allowed"}, [{"Content-type", "text/plain"}], <<"Method Not Allowed">>, Ctx).
+
+simple_app(Ctx) ->
+    set_response({200, "OK"}, [{"Content-type", "text/plain"}], <<"Hello World!">>, Ctx).
+
+set_response(Status, Headers, Content, Ctx) ->
+    Ctx1 = ewgi_api:response_status(Status, Ctx),
+    Ctx2 = ewgi_api:response_headers(Headers, Ctx1),
+    ewgi_api:response_message_body(Content, Ctx2).
 
 add_server_header(Ctx) ->
     Headers = ewgi_api:response_headers(Ctx),
