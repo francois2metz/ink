@@ -4,7 +4,8 @@
          loop/1, simple_app/1]).
 
 start() ->
-    mochiweb_http:start([{loop, fun ?MODULE:loop/1},
+    mochiweb_http:start([{name, ink},
+                         {loop, fun ?MODULE:loop/1},
                          {ip, "127.0.0.1"}, {port, 8889}]).
 
 stop() ->

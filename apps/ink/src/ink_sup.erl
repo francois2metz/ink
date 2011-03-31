@@ -24,5 +24,10 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+    Web = {ink_web,
+           {ink_web, start, []},
+           permanent, 5000, worker, dynamic},
+
+    Processes = [Web],
+    {ok, {{one_for_one, 10, 10}, Processes}}.
 

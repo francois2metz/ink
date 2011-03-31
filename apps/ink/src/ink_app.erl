@@ -10,9 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    {ok, _Pid} = ink_sup:start_link(),
-    ink_web:start().
-
+    {ok, _Pid} = ink_sup:start_link().
 
 stop(_State) ->
     ok.
