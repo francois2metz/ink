@@ -15,11 +15,11 @@ loop(Req) ->
     ewgi_mochiweb:run(fun dispatcher/1, Req).
 
 dispatcher(Ctx) ->
-    add_server_header(dispatch(ewgi_api:path_info(Ctx), Ctx)).
+    add_server_header(dispatch(ewgi_api:request_method(Ctx), ewgi_api:path_info(Ctx), Ctx)).
 
-dispatch("/", Ctx) ->
+dispatch('GET', "/", Ctx) ->
     simple_app(Ctx);
-dispatch(_, {ewgi_context, Request, _Response}) ->
+dispatch(_, _, {ewgi_context, Request, _Response}) ->
     ResponseHeaders = [{"Content-type", "text/plain"}],
     Response = {ewgi_response, {404, "Not Found"}, ResponseHeaders,
                 [<<"Not found!">>], undefined},
